@@ -590,7 +590,7 @@ export function Settings() {
   const [checkingUpdate, setCheckingUpdate] = useState(false);
   const currentVersion = updateStore.formatVersion(updateStore.version);
   const remoteId = updateStore.formatVersion(updateStore.remoteVersion);
-  const hasNewVersion = semverCompare(currentVersion, remoteId) === -1;
+  const hasNewVersion = false;
   const updateUrl = getClientConfig()?.isApp ? RELEASE_URL : UPDATE_URL;
 
   function checkUpdate(force = false) {
@@ -651,6 +651,10 @@ export function Settings() {
     checkUpdate();
     showUsage && checkUsage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    accessStore.update((access) => {
+      access.useCustomConfig = true; // 设置复选框为勾选状态
+      access.provider = ServiceProvider.DeepSeek; // 设置服务商为DeepSeek
+    });
   }, []);
 
   useEffect(() => {
@@ -693,49 +697,10 @@ export function Settings() {
     </ListItem>
   );
 
-  const saasStartComponent = (
-    <ListItem
-      className={styles["subtitle-button"]}
-      title={
-        Locale.Settings.Access.SaasStart.Title +
-        `${Locale.Settings.Access.SaasStart.Label}`
-      }
-      subTitle={Locale.Settings.Access.SaasStart.SubTitle}
-    >
-      <IconButton
-        aria={
-          Locale.Settings.Access.SaasStart.Title +
-          Locale.Settings.Access.SaasStart.ChatNow
-        }
-        icon={<FireIcon />}
-        type={"primary"}
-        text={Locale.Settings.Access.SaasStart.ChatNow}
-        onClick={() => {
-          trackSettingsPageGuideToCPaymentClick();
-          window.location.href = SAAS_CHAT_URL;
-        }}
-      />
-    </ListItem>
-  );
+  const saasStartComponent = null;
 
   const useCustomConfigComponent = // Conditionally render the following ListItem based on clientConfig.isApp
-    !clientConfig?.isApp && ( // only show if isApp is false
-      <ListItem
-        title={Locale.Settings.Access.CustomEndpoint.Title}
-        subTitle={Locale.Settings.Access.CustomEndpoint.SubTitle}
-      >
-        <input
-          aria-label={Locale.Settings.Access.CustomEndpoint.Title}
-          type="checkbox"
-          checked={accessStore.useCustomConfig}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.useCustomConfig = e.currentTarget.checked),
-            )
-          }
-        ></input>
-      </ListItem>
-    );
+    !clientConfig?.isApp && (null);
 
   const openAIConfigComponent = accessStore.provider ===
     ServiceProvider.OpenAI && (
@@ -1203,25 +1168,6 @@ export function Settings() {
     ServiceProvider.DeepSeek && (
     <>
       <ListItem
-        title={Locale.Settings.Access.DeepSeek.Endpoint.Title}
-        subTitle={
-          Locale.Settings.Access.DeepSeek.Endpoint.SubTitle +
-          DeepSeek.ExampleEndpoint
-        }
-      >
-        <input
-          aria-label={Locale.Settings.Access.DeepSeek.Endpoint.Title}
-          type="text"
-          value={accessStore.deepseekUrl}
-          placeholder={DeepSeek.ExampleEndpoint}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.deepseekUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
-      <ListItem
         title={Locale.Settings.Access.DeepSeek.ApiKey.Title}
         subTitle={Locale.Settings.Access.DeepSeek.ApiKey.SubTitle}
       >
@@ -1510,39 +1456,6 @@ export function Settings() {
             </Popover>
           </ListItem>
 
-          <ListItem
-            title={Locale.Settings.Update.Version(currentVersion ?? "unknown")}
-            subTitle={
-              checkingUpdate
-                ? Locale.Settings.Update.IsChecking
-                : hasNewVersion
-                ? Locale.Settings.Update.FoundUpdate(remoteId ?? "ERROR")
-                : Locale.Settings.Update.IsLatest
-            }
-          >
-            {checkingUpdate ? (
-              <LoadingIcon />
-            ) : hasNewVersion ? (
-              clientConfig?.isApp ? (
-                <IconButton
-                  icon={<ResetIcon></ResetIcon>}
-                  text={Locale.Settings.Update.GoToUpdate}
-                  onClick={() => clientUpdate()}
-                />
-              ) : (
-                <Link href={updateUrl} target="_blank" className="link">
-                  {Locale.Settings.Update.GoToUpdate}
-                </Link>
-              )
-            ) : (
-              <IconButton
-                icon={<ResetIcon></ResetIcon>}
-                text={Locale.Settings.Update.CheckUpdate}
-                onClick={() => checkUpdate(true)}
-              />
-            )}
-          </ListItem>
-
           <ListItem title={Locale.Settings.SendKey}>
             <Select
               aria-label={Locale.Settings.SendKey}
@@ -1784,29 +1697,6 @@ export function Settings() {
 
               {accessStore.useCustomConfig && (
                 <>
-                  <ListItem
-                    title={Locale.Settings.Access.Provider.Title}
-                    subTitle={Locale.Settings.Access.Provider.SubTitle}
-                  >
-                    <Select
-                      aria-label={Locale.Settings.Access.Provider.Title}
-                      value={accessStore.provider}
-                      onChange={(e) => {
-                        accessStore.update(
-                          (access) =>
-                            (access.provider = e.target
-                              .value as ServiceProvider),
-                        );
-                      }}
-                    >
-                      {Object.entries(ServiceProvider).map(([k, v]) => (
-                        <option value={v} key={k}>
-                          {k}
-                        </option>
-                      ))}
-                    </Select>
-                  </ListItem>
-
                   {openAIConfigComponent}
                   {azureConfigComponent}
                   {googleConfigComponent}
@@ -1852,25 +1742,6 @@ export function Settings() {
               )}
             </ListItem>
           ) : null}
-
-          <ListItem
-            title={Locale.Settings.Access.CustomModel.Title}
-            subTitle={Locale.Settings.Access.CustomModel.SubTitle}
-            vertical={true}
-          >
-            <input
-              aria-label={Locale.Settings.Access.CustomModel.Title}
-              style={{ width: "100%", maxWidth: "unset", textAlign: "left" }}
-              type="text"
-              value={config.customModels}
-              placeholder="model1,model2,model3"
-              onChange={(e) =>
-                config.update(
-                  (config) => (config.customModels = e.currentTarget.value),
-                )
-              }
-            ></input>
-          </ListItem>
         </List>
 
         <List>
