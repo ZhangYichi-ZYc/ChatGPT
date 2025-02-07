@@ -6,8 +6,21 @@ import EmojiPicker, {
 
 import { ModelType } from "../store";
 
-import BotIcon from "../icons/bot.svg";
-import BlackBotIcon from "../icons/black-bot.svg";
+import BotIconDefault from "../icons/llm-icons/default.svg";
+import BotIconOpenAI from "../icons/llm-icons/openai.svg";
+import BotIconGemini from "../icons/llm-icons/gemini.svg";
+import BotIconGemma from "../icons/llm-icons/gemma.svg";
+import BotIconClaude from "../icons/llm-icons/claude.svg";
+import BotIconMeta from "../icons/llm-icons/meta.svg";
+import BotIconMistral from "../icons/llm-icons/mistral.svg";
+import BotIconDeepseek from "../icons/llm-icons/deepseek.svg";
+import BotIconMoonshot from "../icons/llm-icons/moonshot.svg";
+import BotIconQwen from "../icons/llm-icons/qwen.svg";
+import BotIconWenxin from "../icons/llm-icons/wenxin.svg";
+import BotIconGrok from "../icons/llm-icons/grok.svg";
+import BotIconHunyuan from "../icons/llm-icons/hunyuan.svg";
+import BotIconDoubao from "../icons/llm-icons/doubao.svg";
+import BotIconChatglm from "../icons/llm-icons/chatglm.svg";
 
 export function getEmojiUrl(unified: string, style: EmojiStyle) {
   // Whoever owns this Content Delivery Network (CDN), I am using your CDN to serve emojis
@@ -33,38 +46,49 @@ export function AvatarPicker(props: {
 }
 
 export function Avatar(props: { model?: ModelType; avatar?: string }) {
+  let LlmIcon = BotIconDefault;
+
   if (props.model) {
+    const modelName = props.model.toLowerCase();
+
+    if (
+      modelName.startsWith("gpt") ||
+      modelName.startsWith("chatgpt") ||
+      modelName.startsWith("o1") ||
+      modelName.startsWith("o3")
+    ) {
+      LlmIcon = BotIconOpenAI;
+    } else if (modelName.startsWith("gemini")) {
+      LlmIcon = BotIconGemini;
+    } else if (modelName.startsWith("gemma")) {
+      LlmIcon = BotIconGemma;
+    } else if (modelName.startsWith("claude")) {
+      LlmIcon = BotIconClaude;
+    } else if (modelName.startsWith("llama")) {
+      LlmIcon = BotIconMeta;
+    } else if (modelName.startsWith("mixtral")) {
+      LlmIcon = BotIconMistral;
+    } else if (modelName.startsWith("deepseek")) {
+      LlmIcon = BotIconDeepseek;
+    } else if (modelName.startsWith("moonshot")) {
+      LlmIcon = BotIconMoonshot;
+    } else if (modelName.startsWith("qwen")) {
+      LlmIcon = BotIconQwen;
+    } else if (modelName.startsWith("ernie")) {
+      LlmIcon = BotIconWenxin;
+    } else if (modelName.startsWith("grok")) {
+      LlmIcon = BotIconGrok;
+    } else if (modelName.startsWith("hunyuan")) {
+      LlmIcon = BotIconHunyuan;
+    } else if (modelName.startsWith("doubao")) {
+      LlmIcon = BotIconDoubao;
+    } else if (modelName.startsWith("glm")) {
+      LlmIcon = BotIconChatglm;
+    }
+
     return (
       <div className="no-dark">
-        {props.model?.startsWith("GPT 3.5") || 
-        props.model?.startsWith("gpt-3.5") || 
-        props.model === "Claude 3 Haiku" || 
-        props.model === "Gemini 1.5 Flash" || 
-        props.model === "通义千问 Long" || 
-        props.model === "文心一言 Speed" || 
-        props.model === "混元 Lite" || 
-        props.model === "智谱清言" || 
-        props.model === "心理咨询师 Emohaa" || 
-        props.model === "星火 Lite" || 
-        props.model === "MiniMax 6.5s" || 
-        props.model === "GPT 4o mini" || 
-        props.model === "豆包 Lite" || 
-        props.model === "claude-3-haiku-20240307" || 
-        props.model === "gemini-1.5-flash" || 
-        props.model === "qwen-long" ||  
-        props.model === "qwen-turbo" ||  
-        props.model === "qwen-math-plus" ||  
-        props.model === "qwen-coder-turbo" || 
-        props.model === "ERNIE-Speed-128K" || 
-        props.model === "hunyuan-Lite" || 
-        props.model === "glm-4-air" || 
-        props.model === "lite" || 
-        props.model === "gpt-4o-mini" || 
-        props.model === "emohaa" ? (
-          <BotIcon className="user-avatar" />
-        ) : (
-          <BlackBotIcon className="user-avatar" />
-        )}
+        <LlmIcon className="user-avatar" width={30} height={30} />
       </div>
     );
   }

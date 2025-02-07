@@ -1,5 +1,6 @@
 import { getClientConfig } from "../config/client";
 import { SubmitKey } from "../store/config";
+import { SAAS_CHAT_UTM_URL } from "@/app/constant";
 
 const isApp = !!getClientConfig()?.isApp;
 
@@ -7,16 +8,26 @@ const cn = {
   WIP: "该功能仍在开发中……",
   Error: {
     Unauthorized: isApp
-      ? "登陆凭证无效，请前往[登录](/#/auth)或[设置](/#/settings)页填入正确的凭证。"
-      : "登陆凭证无效，请前往[登录](/#/auth)或[设置](/#/settings)页填入正确的凭证。",
+      ? `😆 对话遇到了一些问题，不用慌:
+       \\ 1️⃣ 想要零配置开箱即用，[点击这里立刻开启对话 🚀](${SAAS_CHAT_UTM_URL})
+       \\ 2️⃣ 如果你想消耗自己的 OpenAI 资源，点击[这里](/#/settings)修改设置 ⚙️`
+      : `😆 对话遇到了一些问题，不用慌:
+       \ 1️⃣ 想要零配置开箱即用，[点击这里立刻开启对话 🚀](${SAAS_CHAT_UTM_URL})
+       \ 2️⃣ 如果你正在使用私有部署版本，点击[这里](/#/auth)输入访问秘钥 🔑
+       \ 3️⃣ 如果你想消耗自己的 OpenAI 资源，点击[这里](/#/settings)修改设置 ⚙️
+       `,
   },
   Auth: {
-    Title: "访问受限",
-    Tips: "请输入访问码",
-    SubTips: "或输入API Key",
-    Input: "访问码",
+    Return: "返回",
+    Title: "需要密码",
+    Tips: "管理员开启了密码验证，请在下方填入访问码",
+    SubTips: "或者输入你的 OpenAI 或 Google AI 密钥",
+    Input: "在此处填写访问码",
     Confirm: "确认",
     Later: "稍后再说",
+    SaasTips: "配置太麻烦，想要立即使用",
+    TopTips:
+      "🥳 NextChat AI 首发优惠，立刻解锁 OpenAI o1, GPT-4o, Claude-3.5 等最新大模型",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 条对话`,
@@ -32,7 +43,7 @@ const cn = {
     },
     Actions: {
       ChatList: "查看消息列表",
-      CompressedHistory: "查看总结后的历史 Prompt",
+      CompressedHistory: "查看压缩后的历史 Prompt",
       Export: "导出聊天记录",
       Copy: "复制",
       Stop: "停止",
@@ -95,6 +106,7 @@ const cn = {
       copyLastMessage: "复制最后一个回复",
       copyLastCode: "复制最后一个代码块",
       showShortcutKey: "显示快捷方式",
+      clearContext: "清除上下文",
     },
   },
   Export: {
@@ -134,7 +146,7 @@ const cn = {
   Memory: {
     Title: "历史摘要",
     EmptyContent: "对话内容过短，无需总结",
-    Send: "自动总结聊天记录并作为上下文发送",
+    Send: "自动压缩聊天记录并作为上下文发送",
     Copy: "复制摘要",
     Reset: "[unused]",
     ResetConfirm: "确认清空历史摘要？",
@@ -165,7 +177,7 @@ const cn = {
       },
     },
     Lang: {
-      Name: "Language", // ATTENTION: if you wanna add a new translation, please do not translate this value, leave it as `Language`
+      Name: "Language", // 注意：如果要添加新的翻译，请不要翻译此值，将它保留为 `Language`
       All: "所有语言",
     },
     Avatar: "头像",
@@ -194,6 +206,8 @@ const cn = {
       IsChecking: "正在检查更新...",
       FoundUpdate: (x: string) => `发现新版本：${x}`,
       GoToUpdate: "前往更新",
+      Success: "更新成功！",
+      Failed: "更新失败",
     },
     SendKey: "发送键",
     Theme: "主题",
@@ -208,7 +222,7 @@ const cn = {
     },
     Sync: {
       CloudState: "云端数据",
-      NotSyncYet: "尚未同步",
+      NotSyncYet: "还没有进行过同步",
       Success: "同步成功",
       Fail: "同步失败",
 
@@ -219,7 +233,7 @@ const cn = {
         },
         SyncType: {
           Title: "同步类型",
-          SubTitle: "选择同步服务器",
+          SubTitle: "选择喜爱的同步服务器",
         },
         Proxy: {
           Title: "启用代理",
@@ -227,7 +241,7 @@ const cn = {
         },
         ProxyUrl: {
           Title: "代理地址",
-          SubTitle: "仅适用于指定跨域代理",
+          SubTitle: "仅适用于本项目自带的跨域代理",
         },
 
         WebDav: {
@@ -282,27 +296,31 @@ const cn = {
       SubTitle: "每次请求携带的历史消息数",
     },
     CompressThreshold: {
-      Title: "历史消息长度总结阈值",
-      SubTitle: "当未总结的历史消息超过该值时，将进行总结",
+      Title: "历史消息长度压缩阈值",
+      SubTitle: "当未压缩的历史消息超过该值时，将进行压缩",
     },
 
     Usage: {
       Title: "余额查询",
       SubTitle(used: any, total: any) {
-        let usedNum = Number(used);
-        let totalNum = Number(total);
-        let remaining = totalNum - usedNum;
-        return `已购$${totalNum.toFixed(2)}，已用$${usedNum.toFixed(2)}，剩余$${remaining.toFixed(2)}`;
+        return `本月已使用 $${used}，订阅总额 $${total}`;
       },
       IsChecking: "正在检查…",
       Check: "重新检查",
-      NoAccess: "输入 API Key 查看余额",
+      NoAccess: "输入 API Key 或访问密码查看余额",
     },
 
     Access: {
+      SaasStart: {
+        Title: "使用 NextChat AI",
+        Label: "（性价比最高的方案）",
+        SubTitle:
+          "由 NextChat 官方维护, 零配置开箱即用，支持 OpenAI o1, GPT-4o, Claude-3.5 等最新大模型",
+        ChatNow: "立刻对话",
+      },
       AccessCode: {
         Title: "访问密码",
-        SubTitle: "已开启加密访问",
+        SubTitle: "管理员已开启加密访问",
         Placeholder: "请输入访问密码",
       },
       CustomEndpoint: {
@@ -316,8 +334,8 @@ const cn = {
       OpenAI: {
         ApiKey: {
           Title: "API Key",
-          SubTitle: "请输入sk开头的48位API Key（令牌）",
-          Placeholder: "sk-xxxxxxx",
+          SubTitle: "使用自定义 OpenAI Key 绕过密码访问限制",
+          Placeholder: "OpenAI API Key",
         },
 
         Endpoint: {
@@ -363,7 +381,7 @@ const cn = {
         ApiKey: {
           Title: "API 密钥",
           SubTitle: "从 Google AI 获取您的 API 密钥",
-          Placeholder: "输入您的 Google AI Studio API 密钥",
+          Placeholder: "Google AI API KEY",
         },
 
         Endpoint: {
@@ -445,6 +463,50 @@ const cn = {
           SubTitle: "样例：",
         },
       },
+      DeepSeek: {
+        ApiKey: {
+          Title: "接口密钥",
+          SubTitle: "使用自定义DeepSeek API Key",
+          Placeholder: "DeepSeek API Key",
+        },
+        Endpoint: {
+          Title: "接口地址",
+          SubTitle: "样例：",
+        },
+      },
+      XAI: {
+        ApiKey: {
+          Title: "接口密钥",
+          SubTitle: "使用自定义XAI API Key",
+          Placeholder: "XAI API Key",
+        },
+        Endpoint: {
+          Title: "接口地址",
+          SubTitle: "样例：",
+        },
+      },
+      ChatGLM: {
+        ApiKey: {
+          Title: "接口密钥",
+          SubTitle: "使用自定义 ChatGLM API Key",
+          Placeholder: "ChatGLM API Key",
+        },
+        Endpoint: {
+          Title: "接口地址",
+          SubTitle: "样例：",
+        },
+      },
+      SiliconFlow: {
+        ApiKey: {
+          Title: "接口密钥",
+          SubTitle: "使用自定义硅基流动 API Key",
+          Placeholder: "硅基流动 API Key",
+        },
+        Endpoint: {
+          Title: "接口地址",
+          SubTitle: "样例：",
+        },
+      },
       Stability: {
         ApiKey: {
           Title: "接口密钥",
@@ -480,8 +542,8 @@ const cn = {
 
     Model: "模型 (model)",
     CompressModel: {
-      Title: "压缩模型",
-      SubTitle: "用于压缩历史记录的模型",
+      Title: "对话摘要模型",
+      SubTitle: "用于压缩历史记录、生成对话标题的模型",
     },
     Temperature: {
       Title: "随机性 (temperature)",
@@ -523,6 +585,39 @@ const cn = {
         SubTitle: "生成语音的速度",
       },
     },
+    Realtime: {
+      Enable: {
+        Title: "实时聊天",
+        SubTitle: "开启实时聊天功能",
+      },
+      Provider: {
+        Title: "模型服务商",
+        SubTitle: "切换不同的服务商",
+      },
+      Model: {
+        Title: "模型",
+        SubTitle: "选择一个模型",
+      },
+      ApiKey: {
+        Title: "API Key",
+        SubTitle: "API Key",
+        Placeholder: "API Key",
+      },
+      Azure: {
+        Endpoint: {
+          Title: "接口地址",
+          SubTitle: "接口地址",
+        },
+        Deployment: {
+          Title: "部署名称",
+          SubTitle: "部署名称",
+        },
+      },
+      Temperature: {
+        Title: "随机性 (temperature)",
+        SubTitle: "值越大，回复越随机",
+      },
+    },
   },
   Store: {
     DefaultTopic: "新的聊天",
@@ -554,11 +649,14 @@ const cn = {
   Discovery: {
     Name: "发现",
   },
+  Mcp: {
+    Name: "MCP",
+  },
   FineTuned: {
     Sysmessage: "你是一个助手",
   },
   SearchChat: {
-    Name: "搜索",
+    Name: "搜索聊天记录",
     Page: {
       Title: "搜索聊天记录",
       Search: "输入搜索关键词",
@@ -579,7 +677,7 @@ const cn = {
       SubTitle: (count: number) => `${count} 个插件`,
       Search: "搜索插件",
       Create: "新建",
-      Find: "您可以从Github寻找优秀插件。",
+      Find: "您可以在Github上找到优秀的插件：",
     },
     Item: {
       Info: (count: number) => `${count} 方法`,
@@ -649,6 +747,10 @@ const cn = {
       Artifacts: {
         Title: "启用Artifacts",
         SubTitle: "启用之后可以直接渲染HTML页面",
+      },
+      CodeFold: {
+        Title: "启用代码折叠",
+        SubTitle: "启用之后可以自动折叠/展开过长的代码块",
       },
       Share: {
         Title: "分享此面具",

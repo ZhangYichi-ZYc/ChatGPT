@@ -12,7 +12,6 @@ import EditIcon from "../icons/edit.svg";
 import AddIcon from "../icons/add.svg";
 import CloseIcon from "../icons/close.svg";
 import DeleteIcon from "../icons/delete.svg";
-import EyeIcon from "../icons/eye.svg";
 import ConfirmIcon from "../icons/confirm.svg";
 import ReloadIcon from "../icons/reload.svg";
 import GithubIcon from "../icons/github.svg";
@@ -29,7 +28,7 @@ import {
 import Locale from "../locales";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { getClientConfig } from "../config/client";
+import clsx from "clsx";
 
 export function PluginPage() {
   const navigate = useNavigate();
@@ -132,6 +131,15 @@ export function PluginPage() {
 
           <div className="window-actions">
             <div className="window-action-button">
+              <a
+                href={PLUGINS_REPO_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <IconButton icon={<GithubIcon />} bordered />
+              </a>
+            </div>
+            <div className="window-action-button">
               <IconButton
                 icon={<CloseIcon />}
                 bordered
@@ -164,7 +172,26 @@ export function PluginPage() {
           </div>
 
           <div>
-            {plugins.length == 0 && (null)}
+            {plugins.length == 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  margin: "60px auto",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {Locale.Plugin.Page.Find}
+                <a
+                  href={PLUGINS_REPO_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ marginLeft: 16 }}
+                >
+                  <IconButton icon={<GithubIcon />} bordered />
+                </a>
+              </div>
+            )}
             {plugins.map((m) => (
               <div className={styles["mask-item"]} key={m.id}>
                 <div className={styles["mask-header"]}>
@@ -173,7 +200,7 @@ export function PluginPage() {
                     <div className={styles["mask-name"]}>
                       {m.title}@<small>{m.version}</small>
                     </div>
-                    <div className={styles["mask-info"] + " one-line"}>
+                    <div className={clsx(styles["mask-info"], "one-line")}>
                       {Locale.Plugin.Item.Info(
                         FunctionToolService.add(m).length,
                       )}
@@ -181,19 +208,11 @@ export function PluginPage() {
                   </div>
                 </div>
                 <div className={styles["mask-actions"]}>
-                  {m.builtin ? (
-                    <IconButton
-                      icon={<EyeIcon />}
-                      text={Locale.Plugin.Item.View}
-                      onClick={() => setEditingPluginId(m.id)}
-                    />
-                  ) : (
-                    <IconButton
-                      icon={<EditIcon />}
-                      text={Locale.Plugin.Item.Edit}
-                      onClick={() => setEditingPluginId(m.id)}
-                    />
-                  )}
+                  <IconButton
+                    icon={<EditIcon />}
+                    text={Locale.Plugin.Item.Edit}
+                    onClick={() => setEditingPluginId(m.id)}
+                  />
                   {!m.builtin && (
                     <IconButton
                       icon={<DeleteIcon />}
@@ -297,23 +316,6 @@ export function PluginPage() {
                   ></PasswordInput>
                 </ListItem>
               )}
-              {!getClientConfig()?.isApp && (
-                <ListItem
-                  title={Locale.Plugin.Auth.Proxy}
-                  subTitle={Locale.Plugin.Auth.ProxyDescription}
-                >
-                  <input
-                    type="checkbox"
-                    checked={editingPlugin?.usingProxy}
-                    style={{ minWidth: 16 }}
-                    onChange={(e) => {
-                      pluginStore.updatePlugin(editingPlugin.id, (plugin) => {
-                        plugin.usingProxy = e.currentTarget.checked;
-                      });
-                    }}
-                  ></input>
-                </ListItem>
-              )}
             </List>
             <List>
               <ListItem title={Locale.Plugin.EditModal.Content}>
@@ -334,7 +336,10 @@ export function PluginPage() {
               <ListItem
                 subTitle={
                   <div
-                    className={`markdown-body ${pluginStyles["plugin-content"]}`}
+                    className={clsx(
+                      "markdown-body",
+                      pluginStyles["plugin-content"],
+                    )}
                     dir="auto"
                   >
                     <pre>
