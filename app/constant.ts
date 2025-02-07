@@ -109,7 +109,7 @@ export const UNFINISHED_INPUT = (id: string) => "unfinished-input-" + id;
 
 export const STORAGE_KEY = "chatgpt-next-web";
 
-export const REQUEST_TIMEOUT_MS = 60000;
+export const REQUEST_TIMEOUT_MS = 300000;
 
 export const EXPORT_MESSAGE_CLASS_NAME = "export-markdown";
 
@@ -269,8 +269,7 @@ export const DEFAULT_INPUT_TEMPLATE = `{{input}}`; // input / time / model / lan
 // Latex block: $$e=mc^2$$
 // `;
 export const DEFAULT_SYSTEM_TEMPLATE = `
-You are ChatGPT, a large language model trained by {{ServiceProvider}}.
-Knowledge cutoff: {{cutoff}}
+You are a large language model designed for advanced conversational interactions and information processing tasks.
 Current model: {{model}}
 Current time: {{time}}
 Latex inline: \\(x^2\\) 
@@ -402,8 +401,8 @@ You are an AI assistant with access to system tools. Your role is to help users 
 `;
 
 export const SUMMARIZE_MODEL = "gpt-4o-mini";
-export const GEMINI_SUMMARIZE_MODEL = "gemini-pro";
-export const DEEPSEEK_SUMMARIZE_MODEL = "deepseek-chat";
+export const GEMINI_SUMMARIZE_MODEL = "gpt-4o-mini";
+export const DEEPSEEK_SUMMARIZE_MODEL = "gpt-4o-mini";
 
 export const KnowledgeCutOffDate: Record<string, string> = {
   default: "2021-09",
