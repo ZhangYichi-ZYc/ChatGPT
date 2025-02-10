@@ -8,26 +8,19 @@ const cn = {
   WIP: "该功能仍在开发中……",
   Error: {
     Unauthorized: isApp
-      ? `😆 对话遇到了一些问题，不用慌:
-       \\ 1️⃣ 想要零配置开箱即用，[点击这里立刻开启对话 🚀](${SAAS_CHAT_UTM_URL})
-       \\ 2️⃣ 如果你想消耗自己的 OpenAI 资源，点击[这里](/#/settings)修改设置 ⚙️`
-      : `😆 对话遇到了一些问题，不用慌:
-       \ 1️⃣ 想要零配置开箱即用，[点击这里立刻开启对话 🚀](${SAAS_CHAT_UTM_URL})
-       \ 2️⃣ 如果你正在使用私有部署版本，点击[这里](/#/auth)输入访问秘钥 🔑
-       \ 3️⃣ 如果你想消耗自己的 OpenAI 资源，点击[这里](/#/settings)修改设置 ⚙️
-       `,
+      ? `登陆凭证无效，请前往[设置](/#/settings)页填入正确的凭证。`
+      : `登陆凭证无效，请前往[设置](/#/settings)页填入正确的凭证。`,
   },
   Auth: {
     Return: "返回",
-    Title: "需要密码",
-    Tips: "管理员开启了密码验证，请在下方填入访问码",
-    SubTips: "或者输入你的 OpenAI 或 Google AI 密钥",
+    Title: "访问凭证",
+    Tips: "请在下方填写API Key",
+    SubTips: "请在下方填写ZYC API Key",
     Input: "在此处填写访问码",
     Confirm: "确认",
     Later: "稍后再说",
-    SaasTips: "配置太麻烦，想要立即使用",
-    TopTips:
-      "🥳 NextChat AI 首发优惠，立刻解锁 OpenAI o1, GPT-4o, Claude-3.5 等最新大模型",
+    SaasTips: "",
+    TopTips:"",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 条对话`,
@@ -192,7 +185,7 @@ const cn = {
     },
     InjectSystemPrompts: {
       Title: "注入系统级提示信息",
-      SubTitle: "强制给每次请求的消息列表开头添加一个模拟 ChatGPT 的系统提示",
+      SubTitle: "强制给每次请求的消息列表开头添加一个增加回复质量的系统提示",
     },
     InputTemplate: {
       Title: "用户输入预处理",
@@ -233,7 +226,7 @@ const cn = {
         },
         SyncType: {
           Title: "同步类型",
-          SubTitle: "选择喜爱的同步服务器",
+          SubTitle: "选择同步服务器",
         },
         Proxy: {
           Title: "启用代理",
@@ -241,7 +234,7 @@ const cn = {
         },
         ProxyUrl: {
           Title: "代理地址",
-          SubTitle: "仅适用于本项目自带的跨域代理",
+          SubTitle: "仅适用于指定跨域代理",
         },
 
         WebDav: {
@@ -303,19 +296,22 @@ const cn = {
     Usage: {
       Title: "余额查询",
       SubTitle(used: any, total: any) {
-        return `本月已使用 $${used}，订阅总额 $${total}`;
+        let usedNum = Number(used);
+        let totalNum = Number(total);
+        let remaining = totalNum - usedNum;
+        return `已购$${totalNum.toFixed(2)}，已用$${usedNum.toFixed(2)}，剩余$${remaining.toFixed(2)}`;
       },
       IsChecking: "正在检查…",
       Check: "重新检查",
-      NoAccess: "输入 API Key 或访问密码查看余额",
+      NoAccess: "输入 API Key 查看余额",
     },
 
     Access: {
       SaasStart: {
-        Title: "使用 NextChat AI",
+        Title: "使用ZYC API",
         Label: "（性价比最高的方案）",
         SubTitle:
-          "由 NextChat 官方维护, 零配置开箱即用，支持 OpenAI o1, GPT-4o, Claude-3.5 等最新大模型",
+          "零配置开箱即用，支持GPT，DeepSeek，Claude 等最新大模型",
         ChatNow: "立刻对话",
       },
       AccessCode: {
@@ -333,9 +329,9 @@ const cn = {
       },
       OpenAI: {
         ApiKey: {
-          Title: "API Key",
-          SubTitle: "使用自定义 OpenAI Key 绕过密码访问限制",
-          Placeholder: "OpenAI API Key",
+          Title: "ZYC API Key",
+          SubTitle: "从 gpt.api.zhangyichi.cn 中获取令牌",
+          Placeholder: "sk-xxxxxx",
         },
 
         Endpoint: {
@@ -465,14 +461,15 @@ const cn = {
       },
       DeepSeek: {
         ApiKey: {
-          Title: "接口密钥",
-          SubTitle: "使用自定义DeepSeek API Key",
-          Placeholder: "DeepSeek API Key",
+          Title: "ZYC API Key",
+          SubTitle: "从 gpt.api.zhangyichi.cn 中获取令牌",
+          Placeholder: "sk-xxxxxx",
         },
         Endpoint: {
           Title: "接口地址",
           SubTitle: "样例：",
         },
+
       },
       XAI: {
         ApiKey: {
