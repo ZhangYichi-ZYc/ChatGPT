@@ -671,7 +671,7 @@ const cn = {
     },
   },
   Plugin: {
-    Name: "插件",
+    Name: "自定义插件集",
     Page: {
       Title: "插件",
       SubTitle: (count: number) => `${count} 个插件`,
