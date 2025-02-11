@@ -706,22 +706,6 @@ export function Settings() {
     ServiceProvider.OpenAI && (
     <>
       <ListItem
-        title={Locale.Settings.Access.OpenAI.Endpoint.Title}
-        subTitle={Locale.Settings.Access.OpenAI.Endpoint.SubTitle}
-      >
-        <input
-          aria-label={Locale.Settings.Access.OpenAI.Endpoint.Title}
-          type="text"
-          value={accessStore.openaiUrl}
-          placeholder={OPENAI_BASE_URL}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.openaiUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
-      <ListItem
         title={Locale.Settings.Access.OpenAI.ApiKey.Title}
         subTitle={Locale.Settings.Access.OpenAI.ApiKey.SubTitle}
       >
