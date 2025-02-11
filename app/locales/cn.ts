@@ -329,7 +329,7 @@ const cn = {
       },
       OpenAI: {
         ApiKey: {
-          Title: "ZYC API Key",
+          Title: "API Key",
           SubTitle: "从 gpt.api.zhangyichi.cn 中获取令牌",
           Placeholder: "sk-xxxxxx",
         },

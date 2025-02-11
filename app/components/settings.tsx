@@ -653,7 +653,7 @@ export function Settings() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     accessStore.update((access) => {
       access.useCustomConfig = true; // 设置复选框为勾选状态
-      access.provider = ServiceProvider.DeepSeek; // 设置服务商为DeepSeek
+      access.provider = ServiceProvider.OpenAI; // 设置服务商为OpenAI
     });
   }, []);
 
