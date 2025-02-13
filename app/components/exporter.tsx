@@ -524,7 +524,7 @@ export function ImagePreviewer(props: {
           </div>
 
           <div>
-            <div className={styles["main-title"]}>ChatGPT</div>
+            <div className={styles["main-title"]}>Sharing</div>
             <div className={styles["sub-title"]}>
               https://gitcode.com/ZhangYichi-ZYc/ChatGPT
             </div>
