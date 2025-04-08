@@ -456,11 +456,11 @@ export const DEFAULT_TTS_VOICES = [
 
 export const VISION_MODEL_REGEXES = [
   /vision/,
+  /omni/,
+  /quasar/,
   /gpt-4o/,
-  /claude-3/,
-  /gemini-1\.5/,
-  /gemini-exp/,
-  /gemini-2\.0/,
+  /claude/,
+  /gemini/,
   /learnlm/,
   /qwen-vl/,
   /qwen2-vl/,
