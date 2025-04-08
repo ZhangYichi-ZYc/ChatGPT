@@ -148,7 +148,7 @@ function getSummarizeModel(
     return [DEEPSEEK_SUMMARIZE_MODEL, ServiceProvider.DeepSeek];
   }
 
-  return [currentModel, providerName];
+  return [SUMMARIZE_MODEL, providerName];
 }
 
 function countMessages(msgs: ChatMessage[]) {
