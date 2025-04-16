@@ -458,13 +458,12 @@ export const VISION_MODEL_REGEXES = [
   /vision/,
   /omni/,
   /quasar/,
-  /gpt-4o/,
+  /gpt/,
   /claude/,
   /gemini/,
   /learnlm/,
   /qwen-vl/,
   /qwen2-vl/,
-  /gpt-4-turbo(?!.*preview)/, // Matches "gpt-4-turbo" but not "gpt-4-turbo-preview"
   /^dall-e-3$/, // Matches exactly "dall-e-3"
   /glm-4v/,
   /vl/i,
