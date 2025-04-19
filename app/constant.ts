@@ -407,9 +407,9 @@ You are an AI assistant with access to system tools. Your role is to help users 
    
 `;
 
-export const SUMMARIZE_MODEL = "gpt-4o-mini";
-export const GEMINI_SUMMARIZE_MODEL = "gpt-4o-mini";
-export const DEEPSEEK_SUMMARIZE_MODEL = "gpt-4o-mini";
+export const SUMMARIZE_MODEL = "gpt-4.1-nano";
+export const GEMINI_SUMMARIZE_MODEL = "gpt-4.1-nano";
+export const DEEPSEEK_SUMMARIZE_MODEL = "gpt-4.1-nano";
 
 export const KnowledgeCutOffDate: Record<string, string> = {
   default: "2021-09",
@@ -467,6 +467,9 @@ export const VISION_MODEL_REGEXES = [
   /omni/,
   /quasar/,
   /gpt/,
+  /o1/,
+  /o3/,
+  /o4/,
   /claude/,
   /gemini/,
   /learnlm/,
