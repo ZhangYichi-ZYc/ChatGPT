@@ -58,7 +58,8 @@ export function Avatar(props: { model?: ModelType; avatar?: string }) {
       modelName.startsWith("dall-e") ||
       modelName.startsWith("dalle") ||
       modelName.startsWith("o1") ||
-      modelName.startsWith("o3")
+      modelName.startsWith("o3")||
+      modelName.startsWith("o4")
     ) {
       LlmIcon = BotIconOpenAI;
     } else if (modelName.startsWith("gemini")) {
