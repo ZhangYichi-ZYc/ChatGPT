@@ -21,10 +21,10 @@ import {
   preProcessImageContent,
   uploadImage,
   base64Image2Blob,
-  streamWithThink,
+  stream,
 } from "@/app/utils/chat";
 import { cloudflareAIGatewayUrl } from "@/app/utils/cloudflare";
-import { ModelSize, DalleQuality, DalleStyle } from "@/app/typing";
+import { DalleSize, DalleQuality, DalleStyle } from "@/app/typing";
 
 import {
   ChatOptions,
@@ -41,7 +41,7 @@ import {
   getMessageTextContent,
   isVisionModel,
   isDalle3 as _isDalle3,
-  getTimeoutMSByModel,
+  getMessageTextContentWithoutThinking,
 } from "@/app/utils";
 import { fetch } from "@/app/utils/stream";
 
@@ -74,7 +74,7 @@ export interface DalleRequestPayload {
   prompt: string;
   response_format: "url" | "b64_json";
   n: number;
-  size: ModelSize;
+  size: DalleSize;
   quality: DalleQuality;
   style: DalleStyle;
 }
@@ -196,10 +196,7 @@ export class ChatGPTApi implements LLMApi {
     let requestPayload: RequestPayload | DalleRequestPayload;
 
     const isDalle3 = _isDalle3(options.config.model);
-    const isO1OrO3 =
-      options.config.model.startsWith("o1") ||
-      options.config.model.startsWith("o3") ||
-      options.config.model.startsWith("o4-mini");
+    const isO1 = options.config.model.startsWith("o1");
     if (isDalle3) {
       const prompt = getMessageTextContent(
         options.messages.slice(-1)?.pop() as any,
@@ -220,8 +217,10 @@ export class ChatGPTApi implements LLMApi {
       for (const v of options.messages) {
         const content = visionModel
           ? await preProcessImageContent(v.content)
-          : getMessageTextContent(v);
-        if (!(isO1OrO3 && v.role === "system"))
+          : v.role === "assistant" // 如果 role 是 assistant
+          ? getMessageTextContentWithoutThinking(v) // 调用 getMessageTextContentWithoutThinking
+          : getMessageTextContent(v); // 否则调用 getMessageTextContent
+        if (!(isO1 && v.role === "system"))
           messages.push({ role: v.role, content });
       }
 
@@ -230,21 +229,21 @@ export class ChatGPTApi implements LLMApi {
         messages,
         stream: options.config.stream,
         model: modelConfig.model,
-        temperature: !isO1OrO3 ? modelConfig.temperature : 1,
-        presence_penalty: !isO1OrO3 ? modelConfig.presence_penalty : 0,
-        frequency_penalty: !isO1OrO3 ? modelConfig.frequency_penalty : 0,
-        top_p: !isO1OrO3 ? modelConfig.top_p : 1,
+        temperature: !isO1 ? modelConfig.temperature : 1,
+        presence_penalty: !isO1 ? modelConfig.presence_penalty : 0,
+        frequency_penalty: !isO1 ? modelConfig.frequency_penalty : 0,
+        top_p: !isO1 ? modelConfig.top_p : 1,
         // max_tokens: Math.max(modelConfig.max_tokens, 1024),
         // Please do not ask me why not send max_tokens, no reason, this param is just shit, I dont want to explain anymore.
       };
 
       // O1 使用 max_completion_tokens 控制token数 (https://platform.openai.com/docs/guides/reasoning#controlling-costs)
-      if (isO1OrO3) {
+      if (isO1) {
         requestPayload["max_completion_tokens"] = modelConfig.max_tokens;
       }
 
       // add max_tokens to vision model
-      if (visionModel && !isO1OrO3) {
+      if (visionModel) {
         requestPayload["max_tokens"] = Math.max(modelConfig.max_tokens, 4000);
       }
     }
@@ -289,17 +288,50 @@ export class ChatGPTApi implements LLMApi {
       }
       if (shouldStream) {
         let index = -1;
-        const [tools, funcs] = usePluginStore
+        let isInThinking = false;
+        const session = useChatStore.getState().currentSession();
+
+        // 获取所有插件工具
+        const [allTools, funcs] = usePluginStore
           .getState()
-          .getAsTools(
-            useChatStore.getState().currentSession().mask?.plugin || [],
-          );
-        // console.log("getAsTools", tools, funcs);
-        streamWithThink(
+          .getAsTools(session.mask?.plugin || []);
+
+        // 添加联网状态日志
+        console.log(
+          "[Chat] Web Access:",
+          session.mask?.plugin?.includes("googleSearch")
+            ? "Enabled"
+            : "Disabled",
+        );
+
+        // 特殊处理gemini模型的联网功能
+        // 如果是gemini-2.0-flash-exp且用户选择了googleSearch，使用特定的tools
+        // 否则使用常规插件tools
+        const useGoogleSearch = session.mask?.plugin?.includes("googleSearch");
+        const isGeminiFlash = modelConfig.model === "gemini-2.0-flash-exp";
+
+        const tools =
+          isGeminiFlash && useGoogleSearch
+            ? [
+                {
+                  type: "function",
+                  function: {
+                    name: "googleSearch",
+                  },
+                },
+              ]
+            : Array.isArray(allTools)
+            ? allTools
+            : [];
+
+        stream(
           chatPath,
-          requestPayload,
+          {
+            ...requestPayload,
+            ...(Array.isArray(tools) && tools.length > 0 ? { tools } : {}),
+          },
           getHeaders(),
-          tools as any,
+          Array.isArray(tools) ? tools : [],
           funcs,
           controller,
           // parseSSE
@@ -308,18 +340,19 @@ export class ChatGPTApi implements LLMApi {
             const json = JSON.parse(text);
             const choices = json.choices as Array<{
               delta: {
-                content: string;
+                content: string | undefined;
                 tool_calls: ChatMessageTool[];
-                reasoning_content: string | null;
+                reasoning_content: string | undefined;
               };
             }>;
-
-            if (!choices?.length) return { isThinking: false, content: "" };
-
             const tool_calls = choices[0]?.delta?.tool_calls;
             if (tool_calls?.length > 0) {
               const id = tool_calls[0]?.id;
-              const args = tool_calls[0]?.function?.arguments;
+              let args = tool_calls[0]?.function?.arguments;
+              // @ts-ignore
+              if (!(args.length > 0)) {
+                args = "";
+              }
               if (id) {
                 index += 1;
                 runTools.push({
@@ -335,37 +368,27 @@ export class ChatGPTApi implements LLMApi {
                 runTools[index]["function"]["arguments"] += args;
               }
             }
-
             const reasoning = choices[0]?.delta?.reasoning_content;
             const content = choices[0]?.delta?.content;
 
-            // Skip if both content and reasoning_content are empty or null
-            if (
-              (!reasoning || reasoning.length === 0) &&
-              (!content || content.length === 0)
-            ) {
-              return {
-                isThinking: false,
-                content: "",
-              };
-            }
-
             if (reasoning && reasoning.length > 0) {
-              return {
-                isThinking: true,
-                content: reasoning,
-              };
-            } else if (content && content.length > 0) {
-              return {
-                isThinking: false,
-                content: content,
-              };
+              if (!isInThinking) {
+                isInThinking = true;
+                return "<think>\n" + reasoning;
+              } else {
+                return reasoning;
+              }
             }
 
-            return {
-              isThinking: false,
-              content: "",
-            };
+            if (content && content.length > 0) {
+              if (isInThinking) {
+                isInThinking = false;
+                return "\n</think>\n\n" + content;
+              } else {
+                return content;
+              }
+            }
+            return choices[0]?.delta?.content;
           },
           // processToolMessage, include tool_calls message and tool call results
           (
@@ -397,7 +420,7 @@ export class ChatGPTApi implements LLMApi {
         // make a fetch request
         const requestTimeoutId = setTimeout(
           () => controller.abort(),
-          getTimeoutMSByModel(options.config.model),
+          isDalle3 || isO1 ? REQUEST_TIMEOUT_MS * 4 : REQUEST_TIMEOUT_MS, // dalle3 using b64_json is slow.
         );
 
         const res = await fetch(chatPath, chatPayload);

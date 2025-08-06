@@ -1,6 +1,5 @@
 import { getClientConfig } from "../config/client";
 import { SubmitKey } from "../store/config";
-import { SAAS_CHAT_UTM_URL } from "@/app/constant";
 
 const isApp = !!getClientConfig()?.isApp;
 
@@ -8,19 +7,21 @@ const cn = {
   WIP: "该功能仍在开发中……",
   Error: {
     Unauthorized: isApp
-      ? `登陆凭证无效，请前往[设置](/#/settings)页填入正确的凭证。`
-      : `登陆凭证无效，请前往[设置](/#/settings)页填入正确的凭证。`,
+      ? `😆 对话遇到了一些问题，不用慌:
+       \\ 1️⃣ 如果你想消耗自己的 API 资源，点击[这里](/#/settings)修改设置 ⚙️`
+      : `😆 对话遇到了一些问题，不用慌:
+       \ 1️⃣ 点击[这里](/#/auth)输入访问秘钥 🔑
+       \ 2️⃣ 如果你想消耗自己的 API 资源，点击[这里](/#/settings)修改设置 ⚙️
+       `,
   },
   Auth: {
     Return: "返回",
-    Title: "访问凭证",
-    Tips: "请在下方填写API Key",
-    SubTips: "请在下方填写ZYC API Key",
+    Title: "需要密码",
+    Tips: "管理员开启了密码验证，请在下方填入访问码",
+    SubTips: "或者输入你的 OpenAI 或 Google AI 密钥",
     Input: "在此处填写访问码",
     Confirm: "确认",
     Later: "稍后再说",
-    SaasTips: "",
-    TopTips:"",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 条对话`,
@@ -82,8 +83,9 @@ const cn = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += "，Shift + Enter 换行";
       }
-      return inputHints + "，/ 触发补全，: 触发命令";
+      return inputHints;
     },
+    MobileInput: "输入消息...",
     Send: "发送",
     StartSpeak: "说话",
     StopSpeak: "停止",
@@ -99,7 +101,10 @@ const cn = {
       copyLastMessage: "复制最后一个回复",
       copyLastCode: "复制最后一个代码块",
       showShortcutKey: "显示快捷方式",
-      clearContext: "清除上下文",
+    },
+    TokenInfo: {
+      TokenCount: (count: number) => `${count} Tokens`,
+      FirstDelay: (delay: number) => `首字延迟: ${delay}ms`,
     },
   },
   Export: {
@@ -170,10 +175,9 @@ const cn = {
       },
     },
     Lang: {
-      Name: "Language", // 注意：如果要添加新的翻译，请不要翻译此值，将它保留为 `Language`
+      Name: "Language", // ATTENTION: if you wanna add a new translation, please do not translate this value, leave it as `Language`
       All: "所有语言",
     },
-    Avatar: "头像",
     FontSize: {
       Title: "字体大小",
       SubTitle: "聊天内容的字体大小",
@@ -185,7 +189,7 @@ const cn = {
     },
     InjectSystemPrompts: {
       Title: "注入系统级提示信息",
-      SubTitle: "强制给每次请求的消息列表开头添加一个增加回复质量的系统提示",
+      SubTitle: "强制给每次请求的消息列表开头添加一个模拟 ChatGPT 的系统提示",
     },
     InputTemplate: {
       Title: "用户输入预处理",
@@ -226,7 +230,7 @@ const cn = {
         },
         SyncType: {
           Title: "同步类型",
-          SubTitle: "选择同步服务器",
+          SubTitle: "选择喜爱的同步服务器",
         },
         Proxy: {
           Title: "启用代理",
@@ -234,7 +238,7 @@ const cn = {
         },
         ProxyUrl: {
           Title: "代理地址",
-          SubTitle: "仅适用于指定跨域代理",
+          SubTitle: "仅适用于本项目自带的跨域代理",
         },
 
         WebDav: {
@@ -256,6 +260,7 @@ const cn = {
       },
       ImportFailed: "导入失败",
     },
+
     Mask: {
       Splash: {
         Title: "面具启动页",
@@ -296,24 +301,14 @@ const cn = {
     Usage: {
       Title: "余额查询",
       SubTitle(used: any, total: any) {
-        let usedNum = Number(used);
-        let totalNum = Number(total);
-        let remaining = totalNum - usedNum;
-        return `已购$${totalNum.toFixed(2)}，已用$${usedNum.toFixed(2)}，剩余$${remaining.toFixed(2)}`;
+        return `本月已使用 $${used}，订阅总额 $${total}`;
       },
       IsChecking: "正在检查…",
       Check: "重新检查",
-      NoAccess: "输入 API Key 查看余额",
+      NoAccess: "输入 API Key 或访问密码查看余额",
     },
 
     Access: {
-      SaasStart: {
-        Title: "使用ZYC API",
-        Label: "（性价比最高的方案）",
-        SubTitle:
-          "零配置开箱即用，支持GPT，DeepSeek，Claude 等最新大模型",
-        ChatNow: "立刻对话",
-      },
       AccessCode: {
         Title: "访问密码",
         SubTitle: "管理员已开启加密访问",
@@ -330,8 +325,8 @@ const cn = {
       OpenAI: {
         ApiKey: {
           Title: "API Key",
-          SubTitle: "从 gpt.api.zhangyichi.cn 中获取令牌",
-          Placeholder: "sk-xxxxxx",
+          SubTitle: "使用自定义 OpenAI Key 绕过密码访问限制",
+          Placeholder: "OpenAI API Key",
         },
 
         Endpoint: {
@@ -459,18 +454,6 @@ const cn = {
           SubTitle: "样例：",
         },
       },
-      DeepSeek: {
-        ApiKey: {
-          Title: "ZYC API Key",
-          SubTitle: "从 gpt.api.zhangyichi.cn 中获取令牌",
-          Placeholder: "sk-xxxxxx",
-        },
-        Endpoint: {
-          Title: "接口地址",
-          SubTitle: "样例：",
-        },
-
-      },
       XAI: {
         ApiKey: {
           Title: "接口密钥",
@@ -487,17 +470,6 @@ const cn = {
           Title: "接口密钥",
           SubTitle: "使用自定义 ChatGLM API Key",
           Placeholder: "ChatGLM API Key",
-        },
-        Endpoint: {
-          Title: "接口地址",
-          SubTitle: "样例：",
-        },
-      },
-      SiliconFlow: {
-        ApiKey: {
-          Title: "接口密钥",
-          SubTitle: "使用自定义硅基流动 API Key",
-          Placeholder: "硅基流动 API Key",
         },
         Endpoint: {
           Title: "接口地址",
@@ -534,6 +506,87 @@ const cn = {
       CustomModel: {
         Title: "自定义模型名",
         SubTitle: "增加自定义模型可选项，使用英文逗号隔开",
+        ModelSelector: "选择模型",
+        FetchModels: "加载模型列表",
+        FetchSuccessFromClient: (count: number) =>
+          `成功从客户端配置获取到 ${count} 个模型`,
+        FetchSuccessFromServer: (count: number) =>
+          `成功从服务端配置获取到 ${count} 个模型`,
+        FetchFailedFromClient: (error: string) =>
+          `从客户端配置获取模型失败: ${error}`,
+        FetchFailedFromServer: (error: string) =>
+          `从服务端配置获取模型失败: ${error}`,
+        ApiKeyRequired: "请先设置API密钥",
+        InvalidResponse: "无效的响应格式",
+        RequestFailed: (status: number) => `请求失败: ${status}`,
+        InputPlaceholder: "输入自定义模型名称并按回车添加",
+        SelectAll: "全选",
+        SelectNone: "全不选",
+        ModelExists: "模型已存在",
+        EditCategories: "编辑模型类别",
+        CategoryName: "类别名称",
+        MatchKeyword: "匹配关键词",
+        AddCategory: "添加",
+        CategoryTip:
+          '匹配关键词将用于识别模型类别，例如"gpt"将匹配所有包含"gpt"的模型',
+        ExistingCategories: "现有自定义类别",
+        NoCustomCategories: "暂无自定义类别",
+        InputPlaceholderEnter: "输入自定义模型名称并按回车添加",
+        RefreshModels: "重新获取模型",
+        ModelNameLabel: "模型名称",
+        MatchRule: "匹配规则",
+        RestoreDefaults: "恢复默认",
+        DeleteConfirm: "确认删除此模型?",
+        AuthRequired: "请先在设置中输入访问密码",
+        SaveEditFailed: "更新本地存储失败",
+        DeleteModelSuccess: "已从本地存储中删除模型",
+        DeleteModelFailed: "更新本地存储失败",
+        ModelNotFound: "找不到要删除的模型",
+        ModelNotFoundInList: "在完整模型列表中找不到要删除的模型",
+        EditModelNotFound: "找不到要编辑的模型",
+        EditModelNotFoundInList: "在完整模型列表中找不到要编辑的模型",
+        FetchFailed: "获取模型列表失败",
+        RestoreRulesSuccess: "已恢复默认匹配规则",
+        RestoreRulesFailed: "恢复默认匹配规则失败",
+        MatchPrefix: "匹配",
+        ModelCategory: "模型类别",
+        ModelCategoryOther: "其他",
+        TestModel: "测试模型",
+        Testing: "测试中...",
+        TestStart: "开始测试 {0} 个模型...",
+        TestSuccess: "{0}: 测试成功 ({1}ms)",
+        TestFailed: "{0}: 测试失败",
+        TestComplete: "测试完成: {0}/{1} 个模型可用",
+        TestError: "测试出错: {0}",
+        SelectModelsToTest: "请先选择要测试的模型",
+        Unavailable: "不可用",
+        NoModelsToTest: "当前没有可测试的模型",
+        TestButton: "测试",
+        TestTimeout: "超时",
+        TestUnavailable: "失败",
+        TestButtonTooltip: "点击测试此模型",
+        RetestButtonTooltip: "点击重新测试此模型",
+        TestStartMessage: "开始测试模型: {0}...",
+        TestSuccessMessage: "{0}: 测试成功 ({1}s)",
+        TestTimeoutMessage: "{0}: 超时",
+        TestErrorMessage: "{0}: {1}",
+        TestErrorPrefix: "测试出错: ",
+        ServerTestFailedError: "服务端测试失败: {0}",
+        UpdateStorageFailedError: "更新本地存储失败",
+        DefaultTestFailedMessage: "测试失败",
+        TestAllModelsStart: "开始测试 {0} 个模型...",
+        StopTest: "停止测试",
+        TestAll: "全部测试",
+        TestStopped: "已停止测试",
+        TestCompleteMessage: "测试完成: {0}/{1} 个模型可用",
+        TimeoutOptions: {
+          FiveSeconds: "5秒",
+          SixSeconds: "6秒",
+          SevenSeconds: "7秒",
+          EightSeconds: "8秒",
+          NineSeconds: "9秒",
+          TenSeconds: "10秒",
+        },
       },
     },
 
@@ -615,6 +668,28 @@ const cn = {
         SubTitle: "值越大，回复越随机",
       },
     },
+    EnableModelSearch: "启用模型搜索",
+    EnableModelSearchSubTitle: "启用之后可以在选择模型时搜索过滤",
+    EnableThemeChange: {
+      Title: "启用主题切换",
+      SubTitle: "是否在对话框中显示主题切换按钮",
+    },
+    EnablePromptHints: {
+      Title: "启用快捷指令功能",
+      SubTitle: "开启后可通过 / 触发快捷指令功能，关闭后将完全禁用快捷指令",
+    },
+    EnableClearContext: {
+      Title: "启用清除聊天",
+      SubTitle: "是否在对话框中显示清除聊天按钮",
+    },
+    EnablePlugins: {
+      Title: "启用插件",
+      SubTitle: "是否在对话框中显示插件按钮",
+    },
+    EnableShortcuts: {
+      Title: "启用快捷键",
+      SubTitle: "是否在对话框中显示快捷键按钮",
+    },
   },
   Store: {
     DefaultTopic: "新的聊天",
@@ -623,7 +698,7 @@ const cn = {
     Prompt: {
       History: (content: string) => "这是历史聊天总结作为前情提要：" + content,
       Topic:
-        "使用四到五个字直接返回这句话的简要主题，不要解释、不要标点、不要语气词、不要多余文本，不要加粗，如果没有主题，请直接返回“闲聊”",
+        '使用四到五个字直接返回这句话的简要主题，不要解释、不要标点、不要语气词、不要多余文本，不要加粗，如果没有主题，请直接返回"闲聊"',
       Summarize:
         "简要总结一下对话内容，用作后续的上下文提示 prompt，控制在 200 字以内",
     },
@@ -648,12 +723,65 @@ const cn = {
   },
   Mcp: {
     Name: "MCP",
+    Market: {
+      Title: "MCP 市场",
+      SubTitle: (count: number) => `${count} 个服务器已配置`,
+      Loading: "加载预设服务器列表...",
+      NoServers: "没有可用的服务器",
+      SearchPlaceholder: "搜索 MCP 服务器",
+      Status: {
+        Active: "运行中",
+        Paused: "已停止",
+        Error: "错误",
+        Initializing: "初始化中",
+        Undefined: "未配置",
+      },
+      Actions: {
+        Add: "添加",
+        Configure: "配置",
+        Start: "启动",
+        Stop: "停止",
+        Tools: "查看",
+        RestartAll: "重启所有",
+      },
+      Operations: {
+        Starting: "正在启动...",
+        Stopping: "正在停止...",
+        Updating: "正在更新配置...",
+        Creating: "正在创建 MCP 客户端...",
+      },
+      ConfigModal: {
+        Title: "配置服务器 - ",
+        Save: "保存",
+        Cancel: "取消",
+        InputPlaceholder: "输入 {0}",
+        AddItem: "添加 {0}",
+      },
+      ToolsModal: {
+        Title: "服务器详情 - ",
+        Close: "关闭",
+        NoTools: "没有可用的工具",
+        Loading: "加载中...",
+      },
+      Errors: {
+        LoadFailed: "加载预设服务器失败",
+        InitFailed: "加载初始状态失败",
+        SaveFailed: "保存配置失败",
+        StartFailed: "启动服务器失败，请检查日志",
+        StopFailed: "停止服务器失败",
+        ToolsLoadFailed: "加载工具失败",
+        ConfigUpdateSuccess: "服务器配置更新成功",
+        StopSuccess: "服务器已成功停止",
+        RestartSuccess: "重启所有服务器成功",
+        RestartFailed: "重启服务器失败",
+      },
+    },
   },
   FineTuned: {
     Sysmessage: "你是一个助手",
   },
   SearchChat: {
-    Name: "搜索聊天记录",
+    Name: "搜索",
     Page: {
       Title: "搜索聊天记录",
       Search: "输入搜索关键词",
@@ -668,7 +796,8 @@ const cn = {
     },
   },
   Plugin: {
-    Name: "自定义插件集",
+    Name: "插件",
+    EnableWeb: "开启联网",
     Page: {
       Title: "插件",
       SubTitle: (count: number) => `${count} 个插件`,
@@ -764,6 +893,9 @@ const cn = {
     Title: "挑选一个面具",
     SubTitle: "现在开始，与面具背后的灵魂思维碰撞",
     More: "查看全部",
+    Think: "已深度思考",
+    Thinking: "正在思考中...",
+    ThinkingTime: (seconds: number) => ` (用时 ${seconds} 秒)`,
   },
 
   URLCommand: {
@@ -781,6 +913,8 @@ const cn = {
     Import: "导入",
     Sync: "同步",
     Config: "配置",
+    Search: "搜索",
+    All: "全部",
   },
   Exporter: {
     Description: {
