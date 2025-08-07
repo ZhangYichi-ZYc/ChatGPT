@@ -608,7 +608,7 @@ export function Settings() {
   const [checkingUpdate, setCheckingUpdate] = useState(false);
   const currentVersion = updateStore.formatVersion(updateStore.version);
   const remoteId = updateStore.formatVersion(updateStore.remoteVersion);
-  const hasNewVersion = semverCompare(currentVersion, remoteId) === -1;
+  const hasNewVersion = false;
   const updateUrl = getClientConfig()?.isApp ? RELEASE_URL : UPDATE_URL;
 
   function checkUpdate(force = false) {
@@ -669,6 +669,10 @@ export function Settings() {
     checkUpdate();
     showUsage && checkUsage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    accessStore.update((access) => {
+      access.useCustomConfig = true; // 设置复选框为勾选状态
+      access.provider = ServiceProvider.OpenAI; // 设置服务商为OpenAI
+    });
   }, []);
 
   useEffect(() => {
@@ -712,43 +716,11 @@ export function Settings() {
   );
 
   const useCustomConfigComponent = // Conditionally render the following ListItem based on clientConfig.isApp
-    !clientConfig?.isApp && ( // only show if isApp is false
-      <ListItem
-        title={Locale.Settings.Access.CustomEndpoint.Title}
-        subTitle={Locale.Settings.Access.CustomEndpoint.SubTitle}
-      >
-        <input
-          aria-label={Locale.Settings.Access.CustomEndpoint.Title}
-          type="checkbox"
-          checked={accessStore.useCustomConfig}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.useCustomConfig = e.currentTarget.checked),
-            )
-          }
-        ></input>
-      </ListItem>
-    );
+    !clientConfig?.isApp && (null);
 
   const openAIConfigComponent = accessStore.provider ===
     ServiceProvider.OpenAI && (
     <>
-      <ListItem
-        title={Locale.Settings.Access.OpenAI.Endpoint.Title}
-        subTitle={Locale.Settings.Access.OpenAI.Endpoint.SubTitle}
-      >
-        <input
-          aria-label={Locale.Settings.Access.OpenAI.Endpoint.Title}
-          type="text"
-          value={accessStore.openaiUrl}
-          placeholder={OPENAI_BASE_URL}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.openaiUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
       <ListItem
         title={Locale.Settings.Access.OpenAI.ApiKey.Title}
         subTitle={Locale.Settings.Access.OpenAI.ApiKey.SubTitle}
@@ -1376,41 +1348,6 @@ export function Settings() {
   // 修改自定义模型输入框的处理逻辑
   const [showModelSelector, setShowModelSelector] = useState(false);
 
-  const customModelsComponent = (
-    <ListItem
-      title={Locale.Settings.Access.CustomModel.Title}
-      subTitle={Locale.Settings.Access.CustomModel.SubTitle}
-      vertical={true}
-    >
-      <div className={styles["custom-model-container"]}>
-        <input
-          aria-label={Locale.Settings.Access.CustomModel.Title}
-          className={styles["custom-model-input"]}
-          type="text"
-          value={config.customModels}
-          placeholder={serverCustomModels || "model1,model2,model3"}
-          onChange={(e) =>
-            config.update(
-              (config) => (config.customModels = e.currentTarget.value),
-            )
-          }
-        ></input>
-        <IconButton
-          icon={<ResetIcon />}
-          text={Locale.Settings.Access.CustomModel.FetchModels}
-          onClick={() => {
-            if (accessStore.isAuthorized()) {
-              setShowModelSelector(true);
-            } else {
-              showToast("请先在设置中输入访问密码");
-            }
-          }}
-          className={styles["custom-model-button"]}
-        />
-      </div>
-    </ListItem>
-  );
-
   return (
     <ErrorBoundary>
       <div className="window-header" data-tauri-drag-region>
@@ -1437,38 +1374,6 @@ export function Settings() {
       </div>
       <div className={styles["settings"]}>
         <List>
-          <ListItem
-            title={Locale.Settings.Update.Version(currentVersion ?? "unknown")}
-            subTitle={
-              checkingUpdate
-                ? Locale.Settings.Update.IsChecking
-                : hasNewVersion
-                ? Locale.Settings.Update.FoundUpdate(remoteId ?? "ERROR")
-                : Locale.Settings.Update.IsLatest
-            }
-          >
-            {checkingUpdate ? (
-              <LoadingIcon />
-            ) : hasNewVersion ? (
-              clientConfig?.isApp ? (
-                <IconButton
-                  icon={<ResetIcon></ResetIcon>}
-                  text={Locale.Settings.Update.GoToUpdate}
-                  onClick={() => clientUpdate()}
-                />
-              ) : (
-                <Link href={updateUrl} target="_blank" className="link">
-                  {Locale.Settings.Update.GoToUpdate}
-                </Link>
-              )
-            ) : (
-              <IconButton
-                icon={<ResetIcon></ResetIcon>}
-                text={Locale.Settings.Update.CheckUpdate}
-                onClick={() => checkUpdate(true)}
-              />
-            )}
-          </ListItem>
 
           <ListItem title={Locale.Settings.SendKey}>
             <Select
@@ -1791,29 +1696,6 @@ export function Settings() {
 
               {accessStore.useCustomConfig && (
                 <>
-                  <ListItem
-                    title={Locale.Settings.Access.Provider.Title}
-                    subTitle={Locale.Settings.Access.Provider.SubTitle}
-                  >
-                    <Select
-                      aria-label={Locale.Settings.Access.Provider.Title}
-                      value={accessStore.provider}
-                      onChange={(e) => {
-                        accessStore.update(
-                          (access) =>
-                            (access.provider = e.target
-                              .value as ServiceProvider),
-                        );
-                      }}
-                    >
-                      {Object.entries(ServiceProvider).map(([k, v]) => (
-                        <option value={v} key={k}>
-                          {k}
-                        </option>
-                      ))}
-                    </Select>
-                  </ListItem>
-
                   {openAIConfigComponent}
                   {azureConfigComponent}
                   {googleConfigComponent}
@@ -1857,8 +1739,6 @@ export function Settings() {
               )}
             </ListItem>
           ) : null}
-
-          {customModelsComponent}
         </List>
 
         <List>
