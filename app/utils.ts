@@ -283,16 +283,7 @@ export function isVisionModel(model: string) {
   const isGpt4Turbo =
     modelLower.includes("gpt-4-turbo") && !modelLower.includes("preview");
 
-  return (
-    !excludeKeywords.some((keyword) =>
-      modelLower.includes(keyword.toLowerCase()),
-    ) &&
-    (visionKeywords.some((keyword) =>
-      modelLower.includes(keyword.toLowerCase()),
-    ) ||
-      isGpt4Turbo ||
-      isDalle3(modelLower))
-  );
+  return true;
 }
 
 export function isDalle3(model: string) {
