@@ -22,6 +22,7 @@ import BotIconHunyuan from "../icons/llm-icons/hunyuan.svg";
 import BotIconDoubao from "../icons/llm-icons/doubao.svg";
 import BotIconChatglm from "../icons/llm-icons/chatglm.svg";
 import BotIconOpenRouter from "../icons/llm-icons/openrouter.svg";
+import BotIconSora from "../icons/llm-icons/sora.svg";
 
 export function getEmojiUrl(unified: string, style: EmojiStyle) {
   // Whoever owns this Content Delivery Network (CDN), I am using your CDN to serve emojis
@@ -64,6 +65,8 @@ export function Avatar(props: { model?: ModelType; avatar?: string }) {
       LlmIcon = BotIconOpenAI;
     } else if (modelName.startsWith("gemini")) {
       LlmIcon = BotIconGemini;
+    } else if (modelName.startsWith("sora")) {
+      LlmIcon = BotIconSora;
     } else if (modelName.startsWith("gemma")) {
       LlmIcon = BotIconGemma;
     } else if (modelName.startsWith("claude")) {
@@ -76,7 +79,7 @@ export function Avatar(props: { model?: ModelType; avatar?: string }) {
       LlmIcon = BotIconDeepseek;
     } else if (modelName.includes("quasar")) {
       LlmIcon = BotIconOpenRouter;
-    } else if (modelName.startsWith("moonshot")) {
+    } else if (modelName.startsWith("moonshot") || modelName.startsWith("kimi")) {
       LlmIcon = BotIconMoonshot;
     } else if (modelName.startsWith("qwen") || modelName.startsWith("qwq")) {
       LlmIcon = BotIconQwen;
