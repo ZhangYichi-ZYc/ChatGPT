@@ -473,6 +473,8 @@ export const VISION_MODEL_REGEXES = [
   /claude/,
   /gemini/,
   /learnlm/,
+  /sora/,
+  /doubao/,
   /qwen-vl/,
   /qwen2-vl/,
   /^dall-e-3$/, // Matches exactly "dall-e-3"
