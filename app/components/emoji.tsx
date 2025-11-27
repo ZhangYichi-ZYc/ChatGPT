@@ -23,6 +23,7 @@ import BotIconDoubao from "../icons/llm-icons/doubao.svg";
 import BotIconChatglm from "../icons/llm-icons/chatglm.svg";
 import BotIconOpenRouter from "../icons/llm-icons/openrouter.svg";
 import BotIconSora from "../icons/llm-icons/sora.svg";
+import BotIconMinimax from "../icons/llm-icons/minimax.svg";
 
 export function getEmojiUrl(unified: string, style: EmojiStyle) {
   // Whoever owns this Content Delivery Network (CDN), I am using your CDN to serve emojis
@@ -71,6 +72,8 @@ export function Avatar(props: { model?: ModelType; avatar?: string }) {
       LlmIcon = BotIconGemma;
     } else if (modelName.startsWith("claude")) {
       LlmIcon = BotIconClaude;
+    } else if (modelName.startsWith("minimax")) {
+      LlmIcon = BotIconMinimax;
     } else if (modelName.includes("llama")) {
       LlmIcon = BotIconMeta;
     } else if (modelName.startsWith("mixtral") || modelName.startsWith("codestral")) {
